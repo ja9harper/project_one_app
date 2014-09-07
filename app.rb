@@ -17,7 +17,11 @@ class App < Sinatra::Base
     $redis = Redis.new({:host => uri.host,
                         :port => uri.port,
                         :password => uri.password})
-    @blogs = []
+    @blogs = [{
+      :blog_title => "saving for a goal",
+      :topic => "saving",
+      :blog_post => "Start simply and it could have big results"
+      }]
   end
 
   before do
@@ -38,23 +42,23 @@ class App < Sinatra::Base
   get('/') do
     render(:erb, :index)
   end
-#goes to a page which prints out all blog entries
+#goes to a page which prints out all blog entries "R"
 #GET ('/')
   get('/blogs') do
-    @blogs
+    @blogs = blogs
     render(:erb, :blogs)
   end
 
-#allow users to submit a new entry
+#allow users to submit a new entry "C"
   get('/blog/new') do
     render(:erb, :blogs)
     redirect to('/')
   end
+
   post('/blog/new') do
     new_post = {
-      :name => name,
-      :topic => topic,
       :blog_title=> blog_title,
+      :topic => topic,
       :blog_post => blog_post
     }
     new_post.to_json
@@ -65,14 +69,43 @@ class App < Sinatra::Base
   # end
   #allow users to delete a blog post
 
+
+  #edits blog posting "U"
+   put("/blog/:id") do
+    name = params[:name]
+    id = params[:id]
+    edited_blog = { blog_title: blog_title, id: id }
+    $redis.set("blogs:#{id}",
+      edited.blog.to_json)
+    redirect to("/blogs/#{id}")
+  end
+  #deletes blog posting "D"
    delete('/blog/:id') do
     id = params[:id]
     $redis.del("blog_title")
     redirect to('/')
   end
   #collects users information and personalizes the page
-  get('contact') do
+  get('/contact') do
     render(:erb, :contact)
+
+  end
+  post('/contact') do
+    new_contact= {
+      :question => question
+    }
+  end
+  def blogs
+   @blogs
+  end
+  def save(blog)
+  key = "blog:#{blog[:blog_title]}:#{blog[:topic]}"
+  redis.set(key, blog.to_json)
+end
+ def new
+    @blog = Blog.new
+  end
+  def edit
   end
 end
 
