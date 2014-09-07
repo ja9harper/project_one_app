@@ -1,0 +1,26 @@
+
+<form name="blog_post" action="/blogs" method="POST">
+  <% @blogs %>
+ <% @blogs[:name] %>
+  <% @blogs[:topic] %>
+   <% @blogs[:topic] %>
+  <div>
+   Let's hear your story:
+<br><br>
+  <label for="name">Name</label>
+    <input type="text" name="name" placeholder="name" id="name">
+  <br></br>
+  Topic:
+  <input type="checkbox">saving</input>
+  <input type="checkbox">debt</input>
+  <input type="checkbox">saving</input><!-- !--   <input type="text" name="topic"
+  savings strategies eliminating debt helpful resources> -->
+  <br></br>
+  <input name="textarea" style="width:250px;height:150px;">
+
+  </input>
+<br></br>
+ <input type="submit" value="Submit">
+
+</div>
+</form>
