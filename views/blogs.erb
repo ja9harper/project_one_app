@@ -1,26 +1,38 @@
 
-<form name="blog_post" action="/blogs" method="POST">
-  <% @blogs %>
- <% @blogs[:name] %>
-  <% @blogs[:topic] %>
-   <% @blogs[:topic] %>
-  <div>
-   Let's hear your story:
-<br><br>
-  <label for="name">Name</label>
-    <input type="text" name="name" placeholder="name" id="name">
-  <br></br>
-  Topic:
-  <input type="checkbox">saving</input>
-  <input type="checkbox">debt</input>
-  <input type="checkbox">saving</input><!-- !--   <input type="text" name="topic"
-  savings strategies eliminating debt helpful resources> -->
-  <br></br>
-  <input name="textarea" style="width:250px;height:150px;">
+<form name="blogs" action="/blogs" method="POST">
+    <% @blogs.each do |blog| %>
+      <div class="boxed">
+     <%= blog["blog_title"] %>
+      </div>
+     <br></br>
+       <div class="boxed">
+     <%= blog["topic"] %>
+      </div>
+     <br></br>
+       <div class="boxed">
+     <%= blog["blog_post"] %>
+      </div>
+      <% @response %>
+     <br></br>
+    <% end %>
+  <div = content>
+    Let's hear your story:
+    <br><br>
 
-  </input>
-<br></br>
- <input type="submit" value="Submit">
-
-</div>
+    <label for="blog_title">
+      Blog title:
+    </label>
+    <input name="blog_title" placeholder="name" id="blog_title">
+    <br></br>
+    <label for="topic">
+      Topic:
+    </label>
+    <input name="topic" placeholder="topic" id="topic">
+    <br></br>
+    Blog post:
+    <input name="blog_post" type="textarea" style="width:250px;height:150px;">
+    </input>
+    <br></br>
+   <input type="submit" value="Submit">
+  </div>
 </form>
