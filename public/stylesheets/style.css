@@ -31,7 +31,10 @@
   border-right: 1px solid #999;
   padding-right: 3%;
 }
-
+#navigation
+{
+  display:inline-block;
+}
 #col3
 {
   float: left;

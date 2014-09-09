@@ -1,4 +1,5 @@
-<content>
+
+<form name="blogs/new" action="/blogs/new" method="POST">
 <%= @blog["blog_title"]%>
   </label>
 <br></br>
@@ -6,6 +7,7 @@
 <br></br>
 <%= @blog["blog_post"] %>
 </content>
+</form>
 <a href="/blogs/<%=params[:id]%>/edit">Edit</a>
 
 <form action=<%= "/blogs/#{id}"%> method="POST">
