@@ -67,39 +67,39 @@ class App < Sinatra::Base
 #provide navigation
   # get ('/') do
 #Facebook
+get ('/') do
+    base_url = "https://www.facebook.com/dialog/oauth?client_id={app-id}
+   &redirect_uri={redirect-uri}"
+    scope = "user"
+    state = SecureRandom.urlsafe_base64
+    session[:state] = state
+    @url = "#{base_url}?client_id=#{APP_ID}&scope=#{scope}&redirect_uri=#{CALLBACK_URL}&state=#{state}"
+    render(:erb, :index)
+  end
 
-#     base_url = "https://www.facebook.com/dialog/oauth?client_id={app-id}
-#    &redirect_uri={redirect-uri}"
-#     scope = "user"
-#     state = SecureRandom.urlsafe_base64
-#     session[:state] = state
-#     @url = "#{base_url}?client_id=#{APP_ID}&scope=#{scope}&redirect_uri=#{CALLBACK_URL}&state=#{state}"
-#     render(:erb, :index)
-#   end
-
-#     get('oauth_callback') do
-#       puts session
-#       state = params[:state]
-#       code = params[:code]
-# send a POST
-#     HTTParty.post("https://www.facebook.com/dialog/oauth/:access_token",
-#             :body => {
-#               client_id => APP_ID,
-#               client_secret => APP_SECRET,
-#               code   => code,
-#               redirect_uri => CALLBACK_URL
-#                },
-#             :headers => {
-#               "Accept" => "application/json"
-#         })
-#     session[:access_token] = response[:access_token]
-#     #access_token = 2d0ef67365c642f40d6fec7f5a489648
-#   redirect to('/')
-#   end
-#   get('/logout') do
-#    session[:access_token] = nil
-#    redirect ('/')
-#   end
+    get('oauth_callback') do
+      puts session
+      state = params[:state]
+      code = params[:code]
+send a POST
+    HTTParty.post("https://www.facebook.com/dialog/oauth/:access_token",
+            :body => {
+              client_id => APP_ID,
+              client_secret => APP_SECRET,
+              code   => code,
+              redirect_uri => CALLBACK_URL
+               },
+            :headers => {
+              "Accept" => "application/json"
+        })
+    session[:access_token] = response[:access_token]
+    #access_token = 2d0ef67365c642f40d6fec7f5a489648
+  redirect to('/')
+  end
+  get('/logout') do
+   session[:access_token] = nil
+   redirect ('/')
+  end
 
 
 # #goes to a page which prints out all blog entries "R"
