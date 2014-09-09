@@ -118,13 +118,14 @@ class App < Sinatra::Base
   # end
   get('/blogs') do
     @blogs = []
-  #   @blogs = $redis.keys("*blogs*").map { |blog| JSON.parse($redis.get(blog)) }
-  #   render(:erb, :index)
-  # end
+    #   @blogs = $redis.keys("*blogs*").map { |blog| JSON.parse($redis.get(blog)) }
+    #   render(:erb, :index)
+    # end
     $redis.smembers("blog_ids").each do |id|
       full_blog_post = $redis.get("blogs:#{id}")
       blog_hash = JSON.parse(full_blog_post)
       @blogs.push(blog_hash)
+    end
     render(:erb, :blogs)
   end
 
@@ -225,8 +226,7 @@ class App < Sinatra::Base
     }
 
     $redis.set("new_user:#{name}", new_contact.to_json)
-  end
-  redirect ('/')
+    redirect ('/')
   end
 
   get('/contact') do
