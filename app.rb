@@ -10,7 +10,7 @@ require 'open-uri'
 require 'securerandom'
 require 'httparty'
 require 'uri'
-# require 'rss'
+require 'simple-rss'
 
 class App < Sinatra::Base
 
@@ -67,7 +67,7 @@ class App < Sinatra::Base
 #provide navigation
   # get ('/') do
 #Facebook
-get ('/') do
+  get ('/') do
     base_url = "https://www.facebook.com/dialog/oauth?client_id={app-id}
    &redirect_uri={redirect-uri}"
     scope = "user"
@@ -81,7 +81,7 @@ get ('/') do
       puts session
       state = params[:state]
       code = params[:code]
-send a POST
+#send a POST
     HTTParty.post("https://www.facebook.com/dialog/oauth/:access_token",
             :body => {
               client_id => APP_ID,
@@ -203,6 +203,7 @@ send a POST
     base_url = "http://api.npr.org/query?id=1018&apiKey=API_KEY"
     @articles = []
     response = HTTParty.get("http://api.npr.org/query?id=1018&apiKey=MDE2NjE4NjIyMDE0MTAwMzY4NzJkODEyMQ001")
+    response["nprml"]["list"]["story"]
     @articles.push(response).to_json
     render(:erb, :articles)
   end
