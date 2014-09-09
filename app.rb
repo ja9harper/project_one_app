@@ -106,16 +106,7 @@ class App < Sinatra::Base
   get('/') do
      render(:erb, :index)
    end
-#RSS for CNN Money
-  # url = 'http://rss.cnn.com/rss/money_pf.rss'
 
-  # open('http://rss.cnn.com/rss/money_pf.rss') do |rss|
-  #  feed = RSS::Parser.parse(rss)
-  #  puts "Title: #{feed.channel.title}"
-  #  feed.items.each do |item|
-  #  puts "Item: #{item.title}"
-
-  # end
   get('/blogs') do
     @blogs = []
     #   @blogs = $redis.keys("*blogs*").map { |blog| JSON.parse($redis.get(blog)) }
@@ -149,7 +140,7 @@ class App < Sinatra::Base
   end
 
   get('/blogs/new') do
-    render(:erb, :blog_post)
+    render(:erb, :blog_new)
   end
 
   post('/blogs/new') do
@@ -163,7 +154,7 @@ class App < Sinatra::Base
     $redis.sadd("blog_ids", id)
     $redis.set("blogs:#{id}", new_post.to_json)
 
-    redirect to('/blogs')
+    redirect to("/blogs/#{id}")
   end
 
   get('/blogs/:id') do
@@ -265,6 +256,16 @@ end
   render(:erb, :rss)
   end
 
+  get ('/') do
+  url = 'http://rss.cnn.com/rss/money_pf.rss'
+  open(url) do |rss|
+  feed = RSS::Parser.parse(rss)
+  puts "Title: #{feed.channel.title}"
+  feed.items.each do |item|
+    puts "Item: #{item.title}"
+  end
+end
+end
 end
 #rss url for cnn is http://rss.cnn.com/rss/money_pf.rss
 # binding.pry
