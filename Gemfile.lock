@@ -3,7 +3,20 @@ GEM
   specs:
     coderay (1.1.0)
     diff-lcs (1.2.5)
+    faraday (0.8.9)
+      multipart-post (~> 1.2.0)
+    faraday_middleware (0.9.1)
+      faraday (>= 0.7.4, < 0.10)
+    httparty (0.13.1)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
+    json (1.8.1)
     method_source (0.8.2)
+    multi_xml (0.5.5)
+    multipart-post (1.2.0)
+    npr (2.0.2)
+      faraday (~> 0.8.0)
+      faraday_middleware (~> 0.9.0)
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -37,6 +50,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  httparty
+  npr (= 2.0.2)
   pry
   redis (= 3.1.0)
   rspec

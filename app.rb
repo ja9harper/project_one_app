@@ -4,7 +4,13 @@ require 'uri'
 require 'redis'
 require 'date'
 require 'pry'
-
+require 'npr'
+# require 'nokogiri'
+require 'open-uri'
+require 'securerandom'
+require 'httparty'
+require 'uri'
+require 'rss'
 
 class App < Sinatra::Base
 
@@ -16,11 +22,12 @@ class App < Sinatra::Base
     enable :logging
     enable :method_override
     enable :sessions
+    set :session_secret, 'super secret'
     uri = URI.parse(ENV["REDISTOGO_URL"])
     $redis = Redis.new
-    #({:host => uri.host,
-    #                     :port => uri.port,
-    #                     :password => uri.password})
+    ({:host => uri.host,
+                        :port => uri.port,
+                        :password => uri.password})
   end
 
   before do
@@ -35,20 +42,56 @@ class App < Sinatra::Base
   #DB Configuration
   ################################
   $redis = Redis.new(:url => ENV["REDISTOGO_URL"])
-#API key for NPR
-  API_KEY= "MDE2NjE4NjIyMDE0MTAwMzY4NzJkODEyMQ001"
+####################################
+#TODO Facebook
+  APP_ID = "1498608590382223"
+  APP_SECRET = "ba6bc01fd56ddb8d76b60313f0207639"
+  CALLBACK_URL = "https://www.facebook.com/connect/login_success.html"
+
+#######################################
+  #TODO API key for NPR
+  NPR.configure do |config|
+    config.apiKey         = "MDE2NjE4NjIyMDE0MTAwMzY4NzJkODEyMQ001"
+    config.sort           = "date descending"
+    config.requiredAssets = "text"
+  end
+
   ########################
   # Routes
   ########################
 #provide navigation
 # get GET
-
-  get('/') do
-
+get('/') do
+    base_url = "https://www.facebook.com/dialog/oauth?client_id={app-id}
+   &redirect_uri={redirect-uri}"
+    scope = "user"
+    state = SecureRandom.urlsafe_base64
+    session[:state] = state
+    @url = "#{base_url}?client_id=#{APP_ID}&scope=#{scope}&redirect_uri=#{CALLBACK_URL}&state=#{state}"
     render(:erb, :index)
-  end
+end
+
+    get('oauth_callback') do
+      puts session
+      state = params[:state]
+      code = params[:code]
+#send a POST
+    HTTParty.post("https://www.facebook.com/dialog/oauth/2d0ef67365c642f40d6fec7f5a489648",
+            :body => {
+              client_id => APP_ID,
+              client_secret => APP_SECRET,
+              code   => code,
+              redirect_uri => CALLBACK_URL
+               },
+            :headers => {
+              "Accept" => "application/json"
+        })
+    session[:access_token] = response[:access_token]
+    #access_token = 2d0ef67365c642f40d6fec7f5a489648
+  redirect to("/")
+end
+
 #goes to a page which prints out all blog entries "R"
-#GET ('/')
   get('/blogs') do
     @blogs = []
     $redis.smembers("blog_ids").each do |id|
@@ -60,56 +103,106 @@ class App < Sinatra::Base
 
   end
 # binding.pry
-  # get('/blog/new') do
-  #   render(:erb, :blogs)
-  #   redirect to('/')
-  # end
-
 
 #allow users to submit a new entry "C"
 
   #POST
 
   post('/blogs') do
-    new_post = {
-      :blog_title=> params[:blog_title],
-      :topic => params[:topic],
-      :blog_post => params[:blog_post]
-    }
+      new_post = {
+        :blog_title=> params[:blog_title],
+        :topic => params[:topic],
+        :blog_post => params[:blog_post]
+      }
     id =  $redis.incr("new_blog_id")
+    # new_post[:id] = id
     $redis.sadd("blog_ids", id)
     $redis.set("blogs:#{id}", new_post.to_json)
 
     redirect to('/blogs')
   end
 
-  get('/blog/:id') do
+
+  get('/blogs/:id') do
     requested_post = params[:id]
     post_json = $redis.get("blogs:#{requested_post}")
    @blog = JSON.parse(post_json)
 
     render(:erb, :blog_post)
   end
+  get('/blogs/:id/edit') do
+    requested_post = params[:id]
+    post_json = $redis.get("blogs:#{requested_post}")
+   @blog = JSON.parse(post_json)
+   # binding.pry
+    render(:erb, :edit)
+  end
 
-
-
-  # # edits blog posting "U"
-  #  put("/blog/:id/edit") do
-  #   id = params[:id]
-  #   edited_blog = $redis(blog_title: blog_title, id: id)
-  #   $redis.set("blogs:#{id}",
-  #     edited_blog.to_json)
-  #   redirect to("/blogs/#{id}")
-  # end
+  # edits blog posting "U"
+  put('/blogs/:id/edit') do
+    id = params[:id]
+    edited_blog = $redis.set("blog_title", "id")
+    $redis.set("blogs:#{id}",
+      edited_blog.to_json)
+    # redirect to("/blogs")
+    redirect to("/blogs/#{id}")
+  end
 
       # delete a blog post "D"
-  delete('/blog/:id/delete') do
+  delete('/blogs/:id') do
     id = params[:id]
     $redis.del("blogs:#{id}")
+    render(:erb, :delete)
+    puts 'your post has been deleted'
     redirect to('/')
+
   end
   #collects users information and personalizes the page
+  get('/articles') do
+    base_url = "http://api.npr.org/query?id=1018&apiKey=API_KEY"
+    @articles = []
+    response = HTTParty.get("http://api.npr.org/query?id=1018&apiKey=MDE2NjE4NjIyMDE0MTAwMzY4NzJkODEyMQ001").to_json
+    @articles.push(response).to_json
 
+    render(:erb, :articles)
+  end
+
+  post('/articles') do
+    rel_articles = {
+      :query => "1018",
+      :API_KEY => "MDE2NjE4NjIyMDE0MTAwMzY4NzJkODEyMQ001"
+
+    }
+
+#turning this thing into an rss feed
+# rss = RSS::Maker.make("atom") do |maker|
+#   maker.channel.author = "janine"
+#   maker.channel.updated = Time.now.to_s
+#   maker.channel.about = "http://www.ruby-lang.org/en/feeds/news.rss"
+#   maker.channel.title = "Example Feed"
+
+#   maker.items.new_item do |item|
+#     item.link = "http://www.ruby-lang.org/en/news/2010/12/25/ruby-1-9-2-p136-is-released/"
+#     item.title = "Ruby 1.9.2-p136 is released"
+#     item.updated = Time.now.to_s
+#   end
+#rss url for cnn is http://rss.cnn.com/rss/money_pf.rss
+end
+
+# binding.pry
+  get('/sign_up') do
+    render(:erb, :sign_up)
+  end
+  post('/sign_up') do
+    new_user = {
+      :name => name,
+      :email => email
+    }
+
+    $redis.set("new_user:#{name}", new_contact.to_json)
+
+  redirect ('/')
+  end
   get('/contact') do
     render(:erb, :contact)
   end
@@ -119,29 +212,27 @@ class App < Sinatra::Base
       :concerns => concerns
     }
     $redis.set("new_contact:#{name}", new_contact.to_json)
+
     redirect to('/')
   end
-  get('/articles') do
-    @articles = []
-    response = $redis.get("http://api.npr.org/query?id=1018&apiKey=API_KEY")
-    @articles = JSON.parse(response)
-    render(:erb , :articles)
-  end
-  def index
-  end
-  def blogs
-   @blogs
-  end
-  def save(blog)
-  key = "blog:#{blog[:blog_title]}:#{blog[:topic]}"
-  redis.set(key, blog.to_json)
-  end
-  def new
-    @blog = Blog.new
-  end
-  def edit
-  end
+  #TODO Add NPR articles
+
 end
+#   def index
+#   end
+#   def blogs
+#    @blogs
+#   end
+#   def save(blog)
+#   key = "blog:#{blog[:blog_title]}:#{blog[:topic]}"
+#   redis.set(key, blog.to_json)
+#   end
+#   def new
+#     @blog = Blog.new
+#   end
+#   def edit
+#   end
+# end
 
 #redis=Redis.new
 # blogs=Blogs.new
@@ -155,3 +246,11 @@ end
 # endpost
 
 
+# client = FacebookOAuth::Client.new(
+#     :application_id => 'YOUR_APPLICATION_ID',
+#     :application_secret => 'YOUR_APP_SECRET_KEY',
+#     :callback => 'http://example.com/facebook/callback'
+# )
+
+# client.authorize_url
+# => "https://graph.facebook.com/oauth/authorize?scope=SCOPE&client_id=ID&type=web_server&redirect_uri=CALLBACK"

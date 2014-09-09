@@ -1,6 +1,14 @@
+<content>
 <%= @blog["blog_title"]%>
   </label>
 <br></br>
 <%= @blog["topic"] %>
 <br></br>
 <%= @blog["blog_post"] %>
+</content>
+<a href="/blogs/<%=params[:id]%>/edit">Edit</a>
+
+<form action=<%= "/blogs/#{id}"%> method="POST">
+  <input type="hidden" name="_method" value="DELETE">
+  <input type="submit" value="Delete">
+</form>

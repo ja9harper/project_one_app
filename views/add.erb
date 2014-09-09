@@ -1,24 +1,5 @@
-
-<form name="blogs" action="/blogs" method="POST">
-
-    <% @blogs.each do |blog| %>
-      <div class="boxed">
-        <container
-     <%= blog["blog_title"] %>
-      </div>
-     <br></br>
-       <div class="boxed">
-     <%= blog["topic"] %>
-      </div>
-     <br></br>
-       <div class="boxed">
-     <%= blog["blog_post"] %>
-      </div>
-      <% @response %>
-     <br></br>
-    <% end %>
-  </container>
-  <div = content>
+ <form name="edit" action="/blogs/<%=params[:id]%>" method="POST">
+ <div = content>
     Let's hear your story:
     <br><br>
 
@@ -42,5 +23,3 @@
    <input type="submit" value="Submit">
   </div>
 </form>
-
-
