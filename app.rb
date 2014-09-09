@@ -10,7 +10,7 @@ require 'open-uri'
 require 'securerandom'
 require 'httparty'
 require 'uri'
-require 'simple-rss'
+require 'rss'
 
 class App < Sinatra::Base
 
@@ -242,20 +242,30 @@ class App < Sinatra::Base
     $redis.set("new_contact:#{name}", new_contact.to_json)
     redirect to('/')
   end
-end
+
 #TODO RSS
 #turning this thing into an rss feed
-# rss = RSS::Maker.make("atom") do |maker|
-#   maker.channel.author = "janine"
-#   maker.channel.updated = Time.now.to_s
-#   maker.channel.about = "http://www.ruby-lang.org/en/feeds/news.rss"
-#   maker.channel.title = "Example Feed"
+  get ('/rss/:id') do
+    title = params[:title]
+    id = params[:id]
+    rss = RSS::Maker.make("atom") do |maker|
+    maker.channel.author = "Janine Harper"
+    maker.channel.updated = Time.now.to_s
+    maker.channel.about = "localhost:9292/rss"
+    maker.channel.title = "cookies&C.R.E.A.M. Blog Fields"
 
-#   maker.items.new_item do |item|
-#     item.link = "http://www.ruby-lang.org/en/news/2010/12/25/ruby-1-9-2-p136-is-released/"
-#     item.title = "Ruby 1.9.2-p136 is released"
-#     item.updated = Time.now.to_s
-#   end
+    maker.items.new_item do |item|
+    item.link = "/posts/#{:id}"
+    item.title = "/posts/#{:title}"
+    item.updated = Time.now.to_s
+  end
+end
+  puts rss
+  @rss = rss
+  render(:erb, :rss)
+  end
+
+end
 #rss url for cnn is http://rss.cnn.com/rss/money_pf.rss
 # binding.pry
 #   def index
