@@ -8,6 +8,7 @@ gem 'redis',  '3.1.0'
 gem 'npr', '2.0.2'
 gem 'httparty'
 gem 'simple-rss'
+gem 'nokogiri'
 
 # only used in development locally
 group :development do

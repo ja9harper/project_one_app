@@ -5,7 +5,7 @@ require 'redis'
 require 'date'
 require 'pry'
 require 'npr'
-# require 'nokogiri'
+require 'nokogiri'
 require 'open-uri'
 require 'securerandom'
 require 'httparty'
@@ -104,8 +104,8 @@ class App < Sinatra::Base
 
 # #goes to a page which prints out all blog entries "R"
   get('/') do
-     render(:erb, :index)
-   end
+     render(:erb, :index )
+  end
 
   get('/blogs') do
     @blogs = []
@@ -161,7 +161,7 @@ class App < Sinatra::Base
     requested_post = params[:id]
     post_json = $redis.get("blogs:#{requested_post}")
    @blog = JSON.parse(post_json)
-    render(:erb, :blogs)
+    render(:erb, :show)
   end
 
   get('/blogs/:id/edit') do
@@ -189,13 +189,18 @@ class App < Sinatra::Base
     redirect to('/blogs')
   end
 
+  # get('/blogs/tag/tagname/micro_posts')
+  # end
+
   #collects users information and personalizes the page
   get('/articles') do
     base_url = "http://api.npr.org/query?id=1018&apiKey=API_KEY"
     @articles = []
     response = HTTParty.get("http://api.npr.org/query?id=1018&apiKey=MDE2NjE4NjIyMDE0MTAwMzY4NzJkODEyMQ001")
     response["nprml"]["list"]["story"]
+
     @articles.push(response).to_json
+     # binding.pry
     render(:erb, :articles)
   end
 
@@ -253,20 +258,29 @@ class App < Sinatra::Base
 end
   puts rss
   @rss = rss
-  render(:erb, :rss)
+  render(:erb, @rss.to_s)
   end
 
-  get ('/') do
+  get ("/rss/#{:id}") do
   url = 'http://rss.cnn.com/rss/money_pf.rss'
-  open(url) do |rss|
-  feed = RSS::Parser.parse(rss)
-  puts "Title: #{feed.channel.title}"
-  feed.items.each do |item|
-    puts "Item: #{item.title}"
+    open(url) do |rss|
+    feed = RSS::Parser.parse(rss)
+    puts "Title: #{feed.channel.title}"
+      feed.items.each do |item|
+      puts "Item: #{item.title}"
+      end
+    end
   end
+  get '/as/blog-post-id' do
+  content_type :json
+  @blogs.to_json
+  end
+  # doc = Nokogiri::HTML(open('http://www.cnbc.com/id/21324812'))
+  # end
+# end
 end
-end
-end
+  # get ('')
+# end
 #rss url for cnn is http://rss.cnn.com/rss/money_pf.rss
 # binding.pry
 #   def index

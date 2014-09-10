@@ -1,23 +1,29 @@
-html
-{
-  background-image: url(http://www.mccsokinawa.com/uploadedImages/MainSite/PersonalFinance_228_10037.jpg?n=1179);
+html {
+  background: url(http://images.quicken.intuit.com/iqcms/marketing/lib/images/Personal%20Finance%20Planning%20Creating%20and%20Protecting%20an%20Emergency%20Fund.jpg)
+  no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
-#header
+
+}
+header
 {
   height: 50px;
   margin-bottom: 1em;
   border-bottom: 1px solid #999;
-  background-color: #ddd;
+
 }
 
-#gutter
+gutter
 {
   float: left;
   width: 3%;
   height: 1px;
 }
 
-#col1
+col1
 {
   float: left;
   width: 44%;
@@ -26,7 +32,7 @@ html
   padding-right: 3%;
 }
 
-#col2
+col2
 {
   float: left;
   width: 19%;
@@ -35,11 +41,8 @@ html
   border-right: 1px solid #999;
   padding-right: 3%;
 }
-navigation
-{
-  display:inline-block;
-}
-#col3
+
+col3
 {
   float: left;
   width: 19%;
@@ -47,7 +50,7 @@ navigation
   margin-bottom: 1em;
 }
 
-#footer
+footer
 {
   clear: both;
   height: 50px;
@@ -59,7 +62,7 @@ navigation
 h1
 {
   margin: 0;
-  padding: .5em;
+  padding: 0;
 }
 
 h2 { margin-top: 0; }

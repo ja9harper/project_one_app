@@ -1,44 +1,15 @@
 
 <form name="blogs" action="/blogs" method="POST">
-<!--
+
     <% @blogs.each do |blog| %>
-      <div class="boxed">
      <%= blog["blog_title"] %>
-      </div>
-     <br></br>
-      <div class="boxed">
      <%= blog["topic"] %>
-      </div>
-     <br></br>
-       <div class="boxed">
      <%= blog["blog_post"] %>
-      </div>
-      <% @response %>
+    <% @response %>
      <br></br>
     <% end %>
+  </form>
 
-  <div = content> -->
-    Let's hear your story:
 
-    <label for="blog_title">
-      Blog title:
-    </label>
-    <input name="blog_title" placeholder="name" id="blog_title">
-    <br></br>
-    <label for="topic">
-      Topic:
-  <SELECT NAME="Topic" SIZE="1">
-<OPTION SELECTED>Savings
-<OPTION>Debt Reduction
-<OPTION>Helpful Resources
-</SELECT>
-<br></br>
-    <label for "blog_post">Blog post:
-    <input name="blog_post" type="textarea" style="width:250px;height:150px;">
-    </input>
-    <br></br>
-   <input type="submit" value="Submit">
-  </div>
-</form>
 
 
