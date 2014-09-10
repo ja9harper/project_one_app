@@ -184,15 +184,13 @@ class App < Sinatra::Base
   delete('/blogs/:id') do
     id = params[:id]
     $redis.del("blogs:#{id}")
-    render(:erb, :delete)
-    puts 'your post has been deleted'
     redirect to('/blogs')
   end
 
   # get('/blogs/tag/tagname/micro_posts')
   # end
 
-  #collects users information and personalizes the page
+  # collects users information and personalizes the page
   get('/articles') do
     base_url = "http://api.npr.org/query?id=1018&apiKey=API_KEY"
     @articles = []
@@ -242,7 +240,7 @@ class App < Sinatra::Base
 #TODO RSS
 #turning this thing into an rss feed
   get ('/rss/:id') do
-    title = params[:title]
+    title = params[:blog_title]
     id = params[:id]
     rss = RSS::Maker.make("atom") do |maker|
     maker.channel.author = "Janine Harper"
@@ -251,8 +249,8 @@ class App < Sinatra::Base
     maker.channel.title = "cookies&C.R.E.A.M. Blog Fields"
 
     maker.items.new_item do |item|
-    item.link = "/posts/#{:id}"
-    item.title = "/posts/#{:title}"
+    item.link = "/blogs/#{:id}"
+    item.title = "/blogs/#{:blog_title}"
     item.updated = Time.now.to_s
   end
 end
@@ -261,24 +259,54 @@ end
   render(:erb, @rss.to_s)
   end
 
-  get ("/rss/#{:id}") do
-  url = 'http://rss.cnn.com/rss/money_pf.rss'
-    open(url) do |rss|
-    feed = RSS::Parser.parse(rss)
-    puts "Title: #{feed.channel.title}"
-      feed.items.each do |item|
-      puts "Item: #{item.title}"
-      end
-    end
+  get ("/rss") do
+    content_type "text/xml"
+    @blog = $redis.keys["blogs"].map { |entry| JSON.parse ($redis.get(entry))}
+    rss = RSS::Maker.make("atom") do |maker|
+  maker.channel.author = "Janine Harper"
+  maker.channel.updated = Time.now.to_s
+  maker.channel.about = "http://localhost:9292/rss"
+  maker.channel.title = "params["
+
+  maker.items.new_item do |item|
+    item.link = params[]
+    item.title = params[]
+    item.updated = Time.now.to_s
   end
-  get '/as/blog-post-id' do
-  content_type :json
-  @blogs.to_json
-  end
-  # doc = Nokogiri::HTML(open('http://www.cnbc.com/id/21324812'))
-  # end
-# end
 end
+  end
+
+  #RSS
+  get ('/as/:id') do
+  content_type :json
+  id = params[:id]
+
+  @blog = $redis.keys["blogs"].map { |entry| JSON.parse ($redis.get(entry))}
+  requested_post = params[:id]
+    post_json = $redis.get("blogs:#{requested_post}")
+   @blog = JSON.parse(post_json)
+   {
+    blog_title     => @blog["blog_title"],
+    topic          => @blog["topic"],
+    full_blog_post => @blog["blog_post"]
+
+    }.to_json
+  end
+
+  get ('/articles') do
+    doc = Nokogiri::HTML(open('http://www.cnbc.com/id/21324812'))
+      puts doc.css
+    render(:erb, :articles)
+  end
+
+# end
+
+end
+#TODO Personalize page to enhance user experience
+# def name(name)
+#   if name
+#     put "Welcome, #{name}"
+#   end
   # get ('')
 # end
 #rss url for cnn is http://rss.cnn.com/rss/money_pf.rss

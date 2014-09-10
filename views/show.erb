@@ -1,7 +1,6 @@
 
 <!DOCTYPE html>
-<html>
-  <head>
+  <body>
     <style>
       body {
           background: url("http://www.royalcliffe.com/wp-content/uploads/2012/12/43014_personal_finance_6757875045_6a6f465379.jpg");
@@ -10,8 +9,6 @@
           padding-top: 40px;
       }
     </style>
-  </head>
-    <body>
 
     <br></br>
     <br></br>
@@ -25,12 +22,13 @@
       </content>
 
 
-    </body>
-  <form action="delete" method="POST">
+
+  <form action="blogs/<%= @blog["id"] %>/edit" method="POST">
   <input type="hidden" name="_method" value="DELETE">
   <input type="submit" value="Delete">
-</form>
-<a href='/blogs/:id/edit'>Edit</a>
+  </form>
+  <a href="/blogs/<%= @blog["id"] %>"/edit">edit</a>
+ </body>
 </html>
 
 
