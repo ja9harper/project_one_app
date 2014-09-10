@@ -9,6 +9,7 @@ require 'securerandom'
 require 'httparty'
 require 'uri'
 require 'rss'
+require 'pry' # if ENV['RACK_ENV'] == "development"
 
 class App < Sinatra::Base
 
@@ -108,14 +109,14 @@ class App < Sinatra::Base
 
   get('/blogs') do
     @blogs = []
-    #   @blogs = $redis.keys("*blogs*").map { |blog| JSON.parse($redis.get(blog)) }
+      @blogs = $redis.keys("*blogs*").map { |blog| JSON.parse($redis.get(blog)) }
     #   render(:erb, :index)
     # end
-    $redis.smembers("blog_ids").each do |id|
-      full_blog_post = $redis.get("blogs:#{id}")
-      blog_hash = JSON.parse(full_blog_post)
-      @blogs.push(blog_hash)
-    end
+    # $redis.smembers("blog_ids").each do |id|
+    #   full_blog_post = $redis.get("blogs:#{id}")
+    #   blog_hash = JSON.parse(full_blog_post)
+    #   @blogs.push(blog_hash)
+    # end
     render(:erb, :blogs)
   end
 

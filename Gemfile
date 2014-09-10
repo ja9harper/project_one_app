@@ -9,12 +9,11 @@ gem 'npr', '2.0.2'
 gem 'httparty'
 gem 'simple-rss'
 gem 'nokogiri'
+gem 'pry'
 
 # only used in development locally
 group :development do
-  gem 'pry'
   gem 'shotgun'
-
 end
 
 group :production do
