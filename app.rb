@@ -166,6 +166,8 @@ class App < Sinatra::Base
     post_json = $redis.get("blogs:#{requested_post}")
    @blog = JSON.parse(post_json)
     render(:erb, :edit)
+
+    redirect to("/blogs")
   end
 
   # edits blog posting "U"
