@@ -3,7 +3,7 @@ require 'json'
 require 'uri'
 require 'redis'
 require 'date'
-require 'pry'
+# require 'pry'
 require 'npr'
 require 'nokogiri'
 require 'open-uri'
@@ -238,43 +238,28 @@ class App < Sinatra::Base
   end
 
 #TODO RSS
-#turning this thing into an rss feed
-  get ('/rss/:id') do
-    title = params[:blog_title]
-    id = params[:id]
-    rss = RSS::Maker.make("atom") do |maker|
-    maker.channel.author = "Janine Harper"
-    maker.channel.updated = Time.now.to_s
-    maker.channel.about = "localhost:9292/rss"
-    maker.channel.title = "cookies&C.R.E.A.M. Blog Fields"
 
-    maker.items.new_item do |item|
-    item.link = "/blogs/#{:id}"
-    item.title = "/blogs/#{:blog_title}"
-    item.updated = Time.now.to_s
-  end
-end
-  puts rss
-  @rss = rss
-  render(:erb, @rss.to_s)
-  end
 
   get ("/rss") do
     content_type "text/xml"
-    @blog = $redis.keys["blogs"].map { |entry| JSON.parse ($redis.get(entry))}
+    @blog = $redis.keys["*blogs*"].map { |entry| JSON.parse ($redis.get(entry))}
     rss = RSS::Maker.make("atom") do |maker|
-  maker.channel.author = "Janine Harper"
-  maker.channel.updated = Time.now.to_s
-  maker.channel.about = "http://localhost:9292/rss"
-  maker.channel.title = "params["
-
-  maker.items.new_item do |item|
-    item.link = params[]
-    item.title = params[]
-    item.updated = Time.now.to_s
+     maker.channel.author = "Janine Harper"
+     maker.channel.updated = Time.now.to_s
+     maker.channel.about = "http://127.0.0.1:9292/rss"
+else
+    maker.channel.about = "http://aqueous-forest-9034.herokuapp.com/rss"
+     maker.channel.title = "Cash Rules Everything Around Me"
+      blogs.each do |blog|
+      maker.items.new_item do |blog|
+      item.link = "blogs/#{blog["id"]}"
+      item.title = "Get Your Gwap Up"
+      item.updated = Time.now.to_s
+    end
   end
 end
-  end
+rss.to_s
+end
 
   #RSS
   get ('/as/:id') do
@@ -298,9 +283,6 @@ end
       puts doc.css
     render(:erb, :articles)
   end
-
-# end
-
 end
 #TODO Personalize page to enhance user experience
 # def name(name)
