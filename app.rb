@@ -65,7 +65,7 @@ class App < Sinatra::Base
 #provide navigation
   # get ('/') do
 #Facebook
-  get ('/') do
+  get('/') do
     base_url = "https://www.facebook.com/dialog/oauth?client_id={app-id}
    &redirect_uri={redirect-uri}"
     scope = "user"
@@ -92,8 +92,9 @@ class App < Sinatra::Base
         })
     session[:access_token] = response[:access_token]
     #access_token = 2d0ef67365c642f40d6fec7f5a489648
-  redirect to('/')
+    redirect to('/')
   end
+
   get('/logout') do
    session[:access_token] = nil
    redirect ('/')
@@ -216,7 +217,7 @@ class App < Sinatra::Base
     }
 
     $redis.set("new_user:#{name}", new_contact.to_json)
-    redirect ('/')
+    redirect to('/')
   end
 
   get('/contact') do
@@ -235,45 +236,43 @@ class App < Sinatra::Base
 #TODO RSS
 
 
-  get ("/rss") do
+  get("/rss") do
     content_type "text/xml"
     @blog = $redis.keys["*blogs*"].map { |entry| JSON.parse ($redis.get(entry))}
     rss = RSS::Maker.make("atom") do |maker|
-     maker.channel.author = "Janine Harper"
-     maker.channel.updated = Time.now.to_s
-     maker.channel.about = "http://127.0.0.1:9292/rss"
-else
-    maker.channel.about = "http://aqueous-forest-9034.herokuapp.com/rss"
-     maker.channel.title = "Cash Rules Everything Around Me"
-      blogs.each do |blog|
-      maker.items.new_item do |blog|
-      item.link = "blogs/#{blog["id"]}"
-      item.title = "Get Your Gwap Up"
-      item.updated = Time.now.to_s
+      maker.channel.author = "Janine Harper"
+      maker.channel.updated = Time.now.to_s
+      maker.channel.about = ENV["HEROKUAPPURL"]
+      maker.channel.title = "Cash Rules Everything Around Me"
+        blogs.each do |blog|
+          maker.items.new_item do |blog|
+            item.link = "blogs/#{blog["id"]}"
+            item.title = "Get Your Gwap Up"
+            item.updated = Time.now.to_s
+          end
+      end
     end
-  end
-end
-rss.to_s
+  rss.to_s
 end
 
   #RSS
-  get ('/as/:id') do
-  content_type :json
-  id = params[:id]
+  get('/as/:id') do
+    content_type :json
+    id = params[:id]
 
-  @blog = $redis.keys["blogs"].map { |entry| JSON.parse ($redis.get(entry))}
-  requested_post = params[:id]
-    post_json = $redis.get("blogs:#{requested_post}")
-   @blog = JSON.parse(post_json)
-   {
-    blog_title     => @blog["blog_title"],
-    topic          => @blog["topic"],
-    full_blog_post => @blog["blog_post"]
+    @blog = $redis.keys["blogs"].map { |entry| JSON.parse ($redis.get(entry))}
+    requested_post = params[:id]
+      post_json = $redis.get("blogs:#{requested_post}")
+     @blog = JSON.parse(post_json)
+     {
+      blog_title     => @blog["blog_title"],
+      topic          => @blog["topic"],
+      full_blog_post => @blog["blog_post"]
 
-    }.to_json
+      }.to_json
   end
 
-  get ('/articles') do
+  get('/articles') do
     doc = Nokogiri::HTML(open('http://www.cnbc.com/id/21324812'))
       puts doc.css
     render(:erb, :articles)
