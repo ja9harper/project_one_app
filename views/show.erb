@@ -1,5 +1,10 @@
 
 <!DOCTYPE html>
+<br></br>
+<br></br>
+<br></br>
+<br></br>
+<br></br>
   <body>
     <style>
       body {
@@ -7,6 +12,7 @@
           background-size: 160px 120px;
           background-repeat: no-repeat;
           padding-top: 40px;
+          position: relative;
       }
     </style>
 
@@ -23,7 +29,7 @@
 
 
 
-  <form action="blogs/<%= @blog["id"] %>/edit" method="POST">
+  <form action="blogs/<%= @blog["id"] %>" method="POST">
   <input type="hidden" name="_method" value="DELETE">
   <input type="submit" value="Delete">
   </form>
