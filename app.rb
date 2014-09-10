@@ -118,8 +118,6 @@ class App < Sinatra::Base
     render(:erb, :blogs)
   end
 
-# binding.pry
-
 #allow users to submit a new entry "C"
 
   #POST
@@ -196,7 +194,6 @@ class App < Sinatra::Base
     response["nprml"]["list"]["story"]
 
     @articles.push(response).to_json
-     # binding.pry
     render(:erb, :articles)
   end
 
@@ -290,7 +287,6 @@ end
   # get ('')
 # end
 #rss url for cnn is http://rss.cnn.com/rss/money_pf.rss
-# binding.pry
 #   def index
 #   end
 #   def blogs
