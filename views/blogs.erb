@@ -2,7 +2,7 @@
 <form name="blogs" action="/blogs" method="POST">
 
     <% @blogs.each do |blog| %>
-     <%= blog["blog_title"] %>
+     <a href="/blogs/<%= @blog["id"] %><%= blog["blog_title"] %></a>
      <%= blog["topic"] %>
      <%= blog["blog_post"] %>
     <% @response %>

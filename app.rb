@@ -191,6 +191,7 @@ class App < Sinatra::Base
   # end
 
   # collects users information and personalizes the page
+
   get('/articles') do
     base_url = "http://api.npr.org/query?id=1018&apiKey=API_KEY"
     @articles = []
